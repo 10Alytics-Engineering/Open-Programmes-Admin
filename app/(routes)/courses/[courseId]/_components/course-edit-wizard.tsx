@@ -23,6 +23,7 @@ import ImageForm from "./image-form";
 import PriceForm from "./price-form.";
 import InstructorForm from "./instructor-form";
 import MiscellenousForm from "./miscellaneous-form";
+import SyllabusForm from "./syllabus-form";
 import TimeTableList from "./timetable-list";
 import CourseActions from "./course-actions";
 import Link from "next/link";
@@ -231,6 +232,14 @@ const CourseEditWizard = ({ course }: CourseEditWizardProps) => {
                                     <h2 className="text-lg">Miscellaneous</h2>
                                 </div>
                                 <MiscellenousForm initialData={course} courseId={course.id} />
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <div className="flex items-center gap-x-2 mb-4">
+                                    <IconBadge icon={ListCollapse} />
+                                    <h2 className="text-lg">Course Syllabus</h2>
+                                </div>
+                                <SyllabusForm initialData={course} courseId={course.id} />
                             </div>
                         </div>
                     </div>

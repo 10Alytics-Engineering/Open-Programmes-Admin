@@ -86,6 +86,7 @@ export type CourseType = {
   course_videos: string[]; // Ids of ProjectVideo
   // purchases: string[]; // Ids of Purchase
   timetable: TimeTable[];
+  syllabus?: string;
   isPublished: boolean;
   cohorts: { id: string }[];
   createdAt: string;
