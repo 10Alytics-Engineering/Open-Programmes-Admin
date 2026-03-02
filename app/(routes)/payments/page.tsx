@@ -150,21 +150,26 @@ function PaymentsContent() {
 
   const getInstallmentStatus = (payment: Payment) => {
     if (!["THREE_INSTALLMENTS", "FOUR_INSTALLMENTS"].includes(payment.paymentPlan)) return null;
-    
+
     const paidCount = payment.paymentInstallments.filter(i => i.paid).length;
     const totalCount = payment.paymentInstallments.length;
-    
+
     return `${paidCount}/${totalCount} paid`;
   };
 
   const getAmountPaid = (payment: Payment) => {
+    // Determine the baseline course fee: use payment.course.price if present, otherwise fallback
+    const coursePrice = payment.course.price
+      ? Number(payment.course.price.replace(/,/g, ""))
+      : TOTAL_COURSE_FEE;
+
     if (payment.paymentPlan === "FULL_PAYMENT") {
-      return TOTAL_COURSE_FEE;
+      return coursePrice;
     }
     if (payment.paymentPlan === "FIRST_HALF_COMPLETE") {
-      return payment.status === "COMPLETE" 
-        ? TOTAL_COURSE_FEE 
-        : TOTAL_COURSE_FEE / 2;
+      return payment.status === "COMPLETE"
+        ? coursePrice
+        : coursePrice / 2;
     }
     if (["THREE_INSTALLMENTS", "FOUR_INSTALLMENTS"].includes(payment.paymentPlan)) {
       return payment.paymentInstallments
@@ -295,7 +300,7 @@ function PaymentsContent() {
               </SelectTrigger>
               <SelectContent>
                 {cohorts
-                  ?.filter((cohort: any) => 
+                  ?.filter((cohort: any) =>
                     courseFilter ? cohort.courseId === courseFilter : true
                   )
                   .map((cohort: any) => (
@@ -305,8 +310,8 @@ function PaymentsContent() {
                   ))}
               </SelectContent>
             </Select>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setSearchTerm("");
                 setStatusFilter(undefined);
@@ -398,12 +403,14 @@ function PaymentsContent() {
                       </TableCell>
                       <TableCell>
                         ₦{getAmountPaid(payment).toLocaleString()}
-                        {payment.paymentPlan === "FIRST_HALF_COMPLETE" && 
+                        {payment.paymentPlan === "FIRST_HALF_COMPLETE" &&
                           payment.status === "BALANCE_HALF_PAYMENT" && (
-                          <div className="text-sm text-muted-foreground">
-                            (of ₦{TOTAL_COURSE_FEE.toLocaleString()})
-                          </div>
-                        )}
+                            <div className="text-sm text-muted-foreground">
+                              (of ₦{(payment.course.price
+                                ? Number(payment.course.price.replace(/,/g, ""))
+                                : TOTAL_COURSE_FEE).toLocaleString()})
+                            </div>
+                          )}
                       </TableCell>
                       <TableCell>
                         {getInstallmentStatus(payment)}
